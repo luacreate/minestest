@@ -11,24 +11,29 @@ app.use(express.static(path.join(__dirname)));
 const USERS_FILE_PATH = path.join('/var/data', 'users.json');
 
 // Инициализация файла users.json на диске при первом запуске
-if (!fs.existsSync(USERS_FILE_PATH)) {
-    // Создаем директорию /var/data, если она не существует
-    fs.mkdirSync('/var/data', { recursive: true });
+function initializeUsersFile() {
+    if (!fs.existsSync(USERS_FILE_PATH)) {
+        // Создаем директорию /var/data, если она не существует
+        fs.mkdirSync('/var/data', { recursive: true });
 
-    // Инициализируем файл users.json с начальными значениями
-    const initialData = {
-        "123456": {
-            "admin": true
-        }
-    };
+        // Инициализируем файл users.json с начальными значениями
+        const initialData = {
+            "123456": {
+                "admin": true
+            }
+        };
 
-    try {
-        fs.writeFileSync(USERS_FILE_PATH, JSON.stringify(initialData, null, 2));
-        console.log('Файл users.json успешно инициализирован');
-    } catch (err) {
-        console.error('Ошибка при инициализации файла users.json:', err);
+        fs.writeFile(USERS_FILE_PATH, JSON.stringify(initialData, null, 2), (err) => {
+            if (err) {
+                console.error('Ошибка при инициализации файла users.json:', err);
+            } else {
+                console.log('Файл users.json успешно инициализирован');
+            }
+        });
     }
 }
+
+initializeUsersFile();
 
 // Чтение данных из JSON-файла
 app.get('/users', (req, res) => {
