@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1win WebApp Access Check</title>
+    <title>WebApp Access Check</title>
     <style>
         @font-face {
             font-family: 'Intro';
@@ -81,7 +81,7 @@
     </div>
 
     <div class="container" id="appContainer" style="display: none;">
-        <h2 id="headerText">Введите ваш ID 1win аккаунта</h2>
+        <h2 id="headerText">Введите ваш ID</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
         <button class="button" onclick="checkAccess()" id="connectButton">Подключиться</button>
         <p id="message"></p>
@@ -90,7 +90,7 @@
     <script>
         const translations = {
             ru: {
-                header: "Введите ваш ID 1win аккаунта",
+                header: "Введите ваш ID",
                 placeholder: "Ваш ID",
                 button: "Подключиться",
                 enterId: "Введите ID",
@@ -98,7 +98,7 @@
                 error: "Ошибка при проверке ID. Попробуйте снова."
             },
             kk: {
-                header: "1win аккаунт ID енгізіңіз",
+                header: "ID енгізіңіз",
                 placeholder: "Сіздің ID",
                 button: "Қосылу",
                 enterId: "ID енгізіңіз",
@@ -106,7 +106,7 @@
                 error: "ID тексеру кезінде қате болды. Қайталап көріңіз."
             },
             uz: {
-                header: "1win hisob ID kiriting",
+                header: "ID kiriting",
                 placeholder: "Sizning ID",
                 button: "Ulanish",
                 enterId: "ID kiriting",
@@ -161,12 +161,14 @@
                         window.location.href = 'admin.html';
                     } else {
                         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+                        // Перенаправление в зависимости от языка и устройства
                         if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                            window.location.href = 'mines-ios/index.html';
+                            window.location.href = `mines-ios/${language}.html`;
                         } else if (/android/i.test(userAgent)) {
-                            window.location.href = 'mines-android-pc/index.html';
+                            window.location.href = `mines-android-pc/${language}.html`;
                         } else {
-                            window.location.href = 'mines-android-pc/index.html';
+                            window.location.href = `mines-android-pc/${language}.html`;
                         }
                     }
                 } else {
@@ -180,7 +182,7 @@
             }
         }
 
-        // Запуск загрузки языка при загрузке страницы
+        // Загрузка выбранного языка при загрузке страницы
         loadLanguage();
     </script>
 </body>
