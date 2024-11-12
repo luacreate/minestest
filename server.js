@@ -14,13 +14,20 @@ const USERS_FILE_PATH = path.join('/var/data', 'users.json');
 if (!fs.existsSync(USERS_FILE_PATH)) {
     // Создаем директорию /var/data, если она не существует
     fs.mkdirSync('/var/data', { recursive: true });
+
     // Инициализируем файл users.json с начальными значениями
     const initialData = {
         "123456": {
             "admin": true
         }
     };
-    fs.writeFileSync(USERS_FILE_PATH, JSON.stringify(initialData, null, 2));
+
+    try {
+        fs.writeFileSync(USERS_FILE_PATH, JSON.stringify(initialData, null, 2));
+        console.log('Файл users.json успешно инициализирован');
+    } catch (err) {
+        console.error('Ошибка при инициализации файла users.json:', err);
+    }
 }
 
 // Чтение данных из JSON-файла
