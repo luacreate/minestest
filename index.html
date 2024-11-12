@@ -71,6 +71,7 @@
     </style>
 </head>
 <body>
+    <!-- Выбор языка -->
     <div class="container" id="languageSelection">
         <h2>Выберите язык</h2>
         <div class="language-buttons">
@@ -80,6 +81,7 @@
         </div>
     </div>
 
+    <!-- Форма ввода ID -->
     <div class="container" id="appContainer" style="display: none;">
         <h2 id="headerText">Введите ваш ID</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
@@ -115,8 +117,10 @@
             }
         };
 
+        let selectedLanguage;
+
         function selectLanguage(language) {
-            localStorage.setItem('selectedLanguage', language);
+            selectedLanguage = language;
             applyLanguage(language);
             document.getElementById('languageSelection').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
@@ -129,23 +133,10 @@
             document.getElementById('connectButton').textContent = texts.button;
         }
 
-        function loadLanguage() {
-            const savedLanguage = localStorage.getItem('selectedLanguage');
-            if (savedLanguage) {
-                applyLanguage(savedLanguage);
-                document.getElementById('languageSelection').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-            } else {
-                document.getElementById('languageSelection').style.display = 'block';
-                document.getElementById('appContainer').style.display = 'none';
-            }
-        }
-
         async function checkAccess() {
             const userId = document.getElementById('userIdInput').value;
             const messageElem = document.getElementById('message');
-            const language = localStorage.getItem('selectedLanguage');
-            const texts = translations[language];
+            const texts = translations[selectedLanguage];
 
             if (!userId) {
                 messageElem.textContent = texts.enterId;
@@ -164,11 +155,11 @@
 
                         // Перенаправление в зависимости от языка и устройства
                         if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                            window.location.href = `mines-ios/${language}.html`;
+                            window.location.href = `mines-ios/${selectedLanguage}.html`;
                         } else if (/android/i.test(userAgent)) {
-                            window.location.href = `mines-android-pc/${language}.html`;
+                            window.location.href = `mines-android-pc/${selectedLanguage}.html`;
                         } else {
-                            window.location.href = `mines-android-pc/${language}.html`;
+                            window.location.href = `mines-android-pc/${selectedLanguage}.html`;
                         }
                     }
                 } else {
@@ -181,9 +172,7 @@
                 messageElem.className = 'error';
             }
         }
-
-        // Загрузка выбранного языка при загрузке страницы
-        loadLanguage();
     </script>
 </body>
 </html>
+
