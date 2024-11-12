@@ -27,55 +27,18 @@ if (!fs.existsSync(USERS_FILE_PATH)) {
 app.get('/users', (req, res) => {
     fs.readFile(USERS_FILE_PATH, 'utf8', (err, data) => {
         if (err) {
-            return res.status(500).send('Ошибка чтения файла');
-        }
-        res.send(JSON.parse(data));
-    });
-});
-
-// Обновление данных в JSON-файле
-app.post('/update-user', (req, res) => {
-    const { userId, admin } = req.body;
-
-    fs.readFile(USERS_FILE_PATH, 'utf8', (err, data) => {
-        if (err) {
+            console.error('Ошибка чтения файла:', err);
             return res.status(500).send('Ошибка чтения файла');
         }
 
-        let users = JSON.parse(data);
-        users[userId] = { admin };
-
-        fs.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                return res.status(500).send('Ошибка сохранения файла');
-            }
-            res.send('Пользователь успешно обновлен');
-        });
-    });
-});
-
-// Добавление нового пользователя в JSON-файл
-app.post('/add-user', (req, res) => {
-    const { userId, admin } = req.body;
-
-    fs.readFile(USERS_FILE_PATH, 'utf8', (err, data) => {
-        if (err) {
-            return res.status(500).send('Ошибка чтения файла');
+        try {
+            const users = JSON.parse(data);
+            console.log('Считанные пользователи:', users); // Лог для проверки содержимого файла users.json
+            res.send(users);
+        } catch (parseError) {
+            console.error('Ошибка парсинга файла users.json:', parseError);
+            return res.status(500).send('Ошибка парсинга файла');
         }
-
-        let users = JSON.parse(data);
-        if (users[userId]) {
-            return res.status(400).send('Пользователь с таким ID уже существует');
-        }
-
-        users[userId] = { admin };
-
-        fs.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                return res.status(500).send('Ошибка сохранения файла');
-            }
-            res.send('Пользователь успешно добавлен');
-        });
     });
 });
 
