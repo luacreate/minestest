@@ -62,22 +62,41 @@
         .add-user {
             margin-top: 20px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
         }
         .add-user input[type="text"] {
-            width: 60%;
+            width: 100%;
             padding: 10px;
-            margin-right: 10px;
+            margin-bottom: 10px;
             border: none;
             border-radius: 5px;
             outline: none;
+        }
+        .add-user select {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            outline: none;
+            background: #34495e;
+            color: white;
         }
         .add-user button {
             background: #27ae60;
         }
         .add-user button:hover {
             background: #219150;
+        }
+        #statusMessage {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .success {
+            color: #2ecc71;
+        }
+        .error {
+            color: #e74c3c;
         }
     </style>
 </head>
@@ -89,8 +108,13 @@
         </div>
         <div class="add-user">
             <input type="text" id="newUserId" placeholder="ID нового пользователя">
+            <select id="userRole">
+                <option value="false">Пользователь</option>
+                <option value="true">Администратор</option>
+            </select>
             <button onclick="addUser()">Добавить пользователя</button>
         </div>
+        <p id="statusMessage"></p>
     </div>
     <script>
         async function loadUsers() {
@@ -117,42 +141,56 @@
 
         async function addUser() {
             const newUserId = document.getElementById('newUserId').value;
+            const userRole = document.getElementById('userRole').value === 'true';
+            const statusMessage = document.getElementById('statusMessage');
+
             if (!newUserId) {
-                alert('Введите ID нового пользователя');
+                statusMessage.textContent = 'Введите ID нового пользователя';
+                statusMessage.className = 'error';
                 return;
             }
+
             try {
                 const response = await fetch('/add-user', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ userId: newUserId, admin: false })
+                    body: JSON.stringify({ userId: newUserId, admin: userRole })
                 });
                 if (response.ok) {
-                    alert('Пользователь добавлен');
+                    statusMessage.textContent = 'Пользователь добавлен';
+                    statusMessage.className = 'success';
                     loadUsers();
                 } else {
-                    alert('Ошибка при добавлении пользователя');
+                    statusMessage.textContent = 'Ошибка при добавлении пользователя';
+                    statusMessage.className = 'error';
                 }
             } catch (error) {
                 console.error('Ошибка при добавлении пользователя:', error);
+                statusMessage.textContent = 'Ошибка при добавлении пользователя';
+                statusMessage.className = 'error';
             }
         }
 
         async function deleteUser(userId) {
+            const statusMessage = document.getElementById('statusMessage');
             try {
                 const response = await fetch(`/admin/users/${userId}`, {
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    alert('Пользователь удалён');
+                    statusMessage.textContent = 'Пользователь удалён';
+                    statusMessage.className = 'success';
                     loadUsers();
                 } else {
-                    alert('Ошибка при удалении пользователя');
+                    statusMessage.textContent = 'Ошибка при удалении пользователя';
+                    statusMessage.className = 'error';
                 }
             } catch (error) {
                 console.error('Ошибка при удалении пользователя:', error);
+                statusMessage.textContent = 'Ошибка при удалении пользователя';
+                statusMessage.className = 'error';
             }
         }
 
