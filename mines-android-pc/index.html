@@ -1,83 +1,190 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Choose Language</title>
-<style>
-    @font-face {
-        font-family: 'Intro';
-        src: url('intro.otf') format('opentype');
-    }
-    body {
-        font-family: 'Intro', sans-serif;
-        background-image: url('fon.jpg');
-        background-size: cover;
-        background-position: center;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 0;
-    }
-    .buttons {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .button {
-        background-color: orange;
-        border: none;
-        color: white;
-        padding: 10px; /* was 20px */
-        text-align: center;
-        text-decoration: none;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 16px; /* was 32px */
-        margin: 2px 7.5px; /* was 4px 15px */
-        cursor: pointer;
-        width: 100px; /* was 200px */
-        height: 50px; /* was 100px */
-        transition: all 0.3s ease;
-        border-radius: 7.5px; /* was 15px */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        position: relative;
-        overflow: hidden;
-    }
-    .button:before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -37.5px; /* was -75px */
-        width: 300%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        transform: skewX(-30deg);
-        transition: left 0.7s ease;
-    }
-    .button:hover:before {
-        left: 100%;
-    }
-    .button:hover {
-        background-color: #e69500;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-        transform: translateY(-1px); /* was -2px */
-    }
-    h1 {
-        color: white;
-        margin-bottom: 20px; /* was 40px */
-        font-size: 32px; /* was 64px */
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1win WebApp Access Check</title>
+    <style>
+        @font-face {
+            font-family: 'Intro';
+            src: url('intro.otf') format('opentype');
+        }
+        body {
+            font-family: 'Intro', sans-serif;
+            background-image: url('fon.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: white;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 7.5px;
+            outline: none;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        button {
+            background-color: orange;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 7.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        button:hover {
+            background-color: #e69500;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 16px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .language-select {
+            margin-bottom: 20px;
+        }
+        .language-select select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            outline: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Choose Language</h1>
-    <div class="buttons">
-        <a href="rus.html" class="button">RUS</a>
-        <a href="en.html" class="button">ENG</a>
+    <div class="container">
+        <div class="language-select">
+            <select id="languageSelector" onchange="changeLanguage()">
+                <option value="ru">Русский</option>
+                <option value="kk">Қазақша</option>
+                <option value="uz">O'zbekcha</option>
+            </select>
+        </div>
+        <h2 id="headerText">Введите ваш ID 1win аккаунта</h2>
+        <input type="text" id="userIdInput" placeholder="Ваш ID">
+        <button onclick="checkAccess()" id="connectButton">Подключиться</button>
+        <p id="message"></p>
     </div>
+    <script>
+        const translations = {
+            ru: {
+                header: "Введите ваш ID 1win аккаунта",
+                placeholder: "Ваш ID",
+                button: "Подключиться",
+                enterId: "Введите ID",
+                accessDenied: "Доступ запрещён",
+                error: "Ошибка при проверке ID. Попробуйте снова."
+            },
+            kk: {
+                header: "1win аккаунт ID енгізіңіз",
+                placeholder: "Сіздің ID",
+                button: "Қосылу",
+                enterId: "ID енгізіңіз",
+                accessDenied: "Қол жеткізу тыйым салынған",
+                error: "ID тексеру кезінде қате болды. Қайталап көріңіз."
+            },
+            uz: {
+                header: "1win hisob ID kiriting",
+                placeholder: "Sizning ID",
+                button: "Ulanish",
+                enterId: "ID kiriting",
+                accessDenied: "Kirish taqiqlangan",
+                error: "ID tekshirishda xatolik yuz berdi. Qayta urinib ko'ring."
+            }
+        };
+
+        function changeLanguage() {
+            const language = document.getElementById('languageSelector').value;
+            localStorage.setItem('selectedLanguage', language);
+            applyLanguage(language);
+        }
+
+        function applyLanguage(language) {
+            const texts = translations[language];
+            document.getElementById('headerText').textContent = texts.header;
+            document.getElementById('userIdInput').placeholder = texts.placeholder;
+            document.getElementById('connectButton').textContent = texts.button;
+        }
+
+        function loadLanguage() {
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'ru';
+            document.getElementById('languageSelector').value = savedLanguage;
+            applyLanguage(savedLanguage);
+        }
+
+        async function checkAccess() {
+            const userId = document.getElementById('userIdInput').value;
+            const messageElem = document.getElementById('message');
+            const language = localStorage.getItem('selectedLanguage') || 'ru';
+            const texts = translations[language];
+
+            if (!userId) {
+                messageElem.textContent = texts.enterId;
+                messageElem.className = 'error';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/users?userId=${userId}`);
+                if (response.ok) {
+                    const user = await response.json();
+                    if (user.admin) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                            window.location.href = 'mines-ios/index.html';
+                        } else if (/android/i.test(userAgent)) {
+                            window.location.href = 'mines-android-pc/index.html';
+                        } else {
+                            window.location.href = 'mines-android-pc/index.html';
+                        }
+                    }
+                } else {
+                    messageElem.textContent = texts.accessDenied;
+                    messageElem.className = 'error';
+                }
+            } catch (error) {
+                console.error('Ошибка при проверке ID:', error);
+                messageElem.textContent = texts.error;
+                messageElem.className = 'error';
+            }
+        }
+
+        // Загрузка выбранного языка при загрузке страницы
+        loadLanguage();
+    </script>
 </body>
 </html>
