@@ -5,68 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1win WebApp Access Check</title>
     <style>
+        @font-face {
+            font-family: 'Intro';
+            src: url('intro.otf') format('opentype');
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Intro', sans-serif;
+            background-image: url('fon.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(to bottom, #3b4c5f, #1f2d40);
-            color: white;
             margin: 0;
+            color: white;
         }
         .container {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             text-align: center;
             max-width: 400px;
             width: 100%;
         }
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
         input[type="text"] {
             width: 80%;
-            padding: 10px;
+            padding: 12px;
             margin: 15px 0;
             border: none;
-            border-radius: 5px;
+            border-radius: 7.5px;
             outline: none;
-        }
-        button {
-            padding: 10px 20px;
-            background: #6c5ce7;
-            border: none;
-            border-radius: 5px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
             color: white;
             font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        button {
+            background-color: orange;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
             cursor: pointer;
-            transition: background 0.3s;
+            border-radius: 7.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         button:hover {
-            background: #8e7dd0;
+            background-color: #e69500;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 16px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .language-select {
+            margin-bottom: 20px;
+        }
+        .language-select select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            outline: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Введите ваш ID 1win аккаунта</h2>
+        <div class="language-select">
+            <select id="languageSelector" onchange="changeLanguage()">
+                <option value="ru">Русский</option>
+                <option value="kk">Қазақша</option>
+                <option value="uz">O'zbekcha</option>
+            </select>
+        </div>
+        <h2 id="headerText">Введите ваш ID 1win аккаунта</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
-        <button onclick="checkAccess()">Подключиться</button>
+        <button onclick="checkAccess()" id="connectButton">Подключиться</button>
         <p id="message"></p>
     </div>
     <script>
+        const translations = {
+            ru: {
+                header: "Введите ваш ID 1win аккаунта",
+                placeholder: "Ваш ID",
+                button: "Подключиться",
+                enterId: "Введите ID",
+                accessDenied: "Доступ запрещён",
+                error: "Ошибка при проверке ID. Попробуйте снова."
+            },
+            kk: {
+                header: "1win аккаунт ID енгізіңіз",
+                placeholder: "Сіздің ID",
+                button: "Қосылу",
+                enterId: "ID енгізіңіз",
+                accessDenied: "Қол жеткізу тыйым салынған",
+                error: "ID тексеру кезінде қате болды. Қайталап көріңіз."
+            },
+            uz: {
+                header: "1win hisob ID kiriting",
+                placeholder: "Sizning ID",
+                button: "Ulanish",
+                enterId: "ID kiriting",
+                accessDenied: "Kirish taqiqlangan",
+                error: "ID tekshirishda xatolik yuz berdi. Qayta urinib ko'ring."
+            }
+        };
+
+        function changeLanguage() {
+            const language = document.getElementById('languageSelector').value;
+            localStorage.setItem('selectedLanguage', language);
+            applyLanguage(language);
+        }
+
+        function applyLanguage(language) {
+            const texts = translations[language];
+            document.getElementById('headerText').textContent = texts.header;
+            document.getElementById('userIdInput').placeholder = texts.placeholder;
+            document.getElementById('connectButton').textContent = texts.button;
+        }
+
+        function loadLanguage() {
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'ru';
+            document.getElementById('languageSelector').value = savedLanguage;
+            applyLanguage(savedLanguage);
+        }
+
         async function checkAccess() {
             const userId = document.getElementById('userIdInput').value;
             const messageElem = document.getElementById('message');
+            const language = localStorage.getItem('selectedLanguage') || 'ru';
+            const texts = translations[language];
 
             if (!userId) {
-                messageElem.textContent = "Введите ID";
+                messageElem.textContent = texts.enterId;
+                messageElem.className = 'error';
                 return;
             }
 
             try {
                 const response = await fetch(`/users?userId=${userId}`);
-                
                 if (response.ok) {
                     const user = await response.json();
                     if (user.admin) {
@@ -82,13 +173,18 @@
                         }
                     }
                 } else {
-                    messageElem.textContent = "Доступ запрещён";
+                    messageElem.textContent = texts.accessDenied;
+                    messageElem.className = 'error';
                 }
             } catch (error) {
                 console.error('Ошибка при проверке ID:', error);
-                messageElem.textContent = "Ошибка при проверке ID. Попробуйте снова.";
+                messageElem.textContent = texts.error;
+                messageElem.className = 'error';
             }
         }
+
+        // Загрузка выбранного языка при загрузке страницы
+        loadLanguage();
     </script>
 </body>
 </html>
