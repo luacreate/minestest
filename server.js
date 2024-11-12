@@ -7,9 +7,17 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Новый путь к файлу users.json на диске Render
+const USERS_FILE_PATH = path.join('/data', 'users.json');
+
+// Инициализация файла users.json на диске при первом запуске
+if (!fs.existsSync(USERS_FILE_PATH)) {
+    fs.writeFileSync(USERS_FILE_PATH, JSON.stringify({}));
+}
+
 // Чтение данных из JSON-файла
 app.get('/users', (req, res) => {
-    fs.readFile(path.join(__dirname, 'public', 'users.json'), 'utf8', (err, data) => {
+    fs.readFile(USERS_FILE_PATH, 'utf8', (err, data) => {
         if (err) {
             return res.status(500).send('Ошибка чтения файла');
         }
@@ -21,7 +29,7 @@ app.get('/users', (req, res) => {
 app.post('/update-user', (req, res) => {
     const { userId, admin } = req.body;
 
-    fs.readFile(path.join(__dirname, 'public', 'users.json'), 'utf8', (err, data) => {
+    fs.readFile(USERS_FILE_PATH, 'utf8', (err, data) => {
         if (err) {
             return res.status(500).send('Ошибка чтения файла');
         }
@@ -29,7 +37,7 @@ app.post('/update-user', (req, res) => {
         let users = JSON.parse(data);
         users[userId] = { admin };
 
-        fs.writeFile(path.join(__dirname, 'public', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+        fs.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2), (err) => {
             if (err) {
                 return res.status(500).send('Ошибка сохранения файла');
             }
@@ -42,7 +50,7 @@ app.post('/update-user', (req, res) => {
 app.post('/add-user', (req, res) => {
     const { userId, admin } = req.body;
 
-    fs.readFile(path.join(__dirname, 'public', 'users.json'), 'utf8', (err, data) => {
+    fs.readFile(USERS_FILE_PATH, 'utf8', (err, data) => {
         if (err) {
             return res.status(500).send('Ошибка чтения файла');
         }
@@ -54,7 +62,7 @@ app.post('/add-user', (req, res) => {
 
         users[userId] = { admin };
 
-        fs.writeFile(path.join(__dirname, 'public', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+        fs.writeFile(USERS_FILE_PATH, JSON.stringify(users, null, 2), (err) => {
             if (err) {
                 return res.status(500).send('Ошибка сохранения файла');
             }
