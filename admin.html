@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ Панель</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        input {
+            margin: 10px;
+            padding: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Редактирование пользователей</h2>
+    <input type="text" id="userIdInput" placeholder="ID пользователя">
+    <select id="adminStatus">
+        <option value="true">Админ</option>
+        <option value="false">Не Админ</option>
+    </select>
+    <button onclick="updateUser()">Обновить</button>
+    <button onclick="addUser()">Добавить пользователя</button>
+    <p id="message"></p>
+
+    <script>
+        async function updateUser() {
+            const userId = document.getElementById('userIdInput').value;
+            const admin = document.getElementById('adminStatus').value === 'true';
+
+            if (!userId) {
+                document.getElementById('message').textContent = "Введите ID пользователя";
+                return;
+            }
+
+            try {
+                const response = await fetch('/update-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, admin })
+                });
+
+                if (response.ok) {
+                    document.getElementById('message').textContent = "Пользователь успешно обновлен";
+                } else {
+                    document.getElementById('message').textContent = "Ошибка при обновлении пользователя";
+                }
+            } catch (error) {
+                document.getElementById('message').textContent = "Ошибка при отправке запроса";
+            }
+        }
+
+        async function addUser() {
+            const userId = document.getElementById('userIdInput').value;
+            const admin = document.getElementById('adminStatus').value === 'true';
+
+            if (!userId) {
+                document.getElementById('message').textContent = "Введите ID пользователя";
+                return;
+            }
+
+            try {
+                const response = await fetch('/add-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, admin })
+                });
+
+                if (response.ok) {
+                    document.getElementById('message').textContent = "Пользователь успешно добавлен";
+                } else {
+                    const errorText = await response.text();
+                    document.getElementById('message').textContent = `Ошибка: ${errorText}`;
+                }
+            } catch (error) {
+                document.getElementById('message').textContent = "Ошибка при отправке запроса";
+            }
+        }
+    </script>
+</body>
+</html>
