@@ -1,0 +1,13 @@
+{
+  "name": "1win-access-check",
+  "version": "1.0.0",
+  "description": "WebApp для проверки доступа и администрирования пользователей",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fs": "0.0.1-security"
+  }
+}
