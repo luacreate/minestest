@@ -9,7 +9,7 @@ app.use(express.static(path.join(__dirname)));
 
 // Пул подключений к базе данных PostgreSQL
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: process.env.DATABASE_URL.replace("postgresql://", "postgres://"),
     ssl: {
         rejectUnauthorized: false
     }
