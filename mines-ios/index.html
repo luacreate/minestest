@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Choose Language</title>
+<style>
+    @font-face {
+        font-family: 'Intro';
+        src: url('intro.otf') format('opentype');
+    }
+    body {
+        font-family: 'Intro', sans-serif;
+        background-image: url('fon.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+    .buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .button {
+        background-color: orange;
+        border: none;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 32px;
+        margin: 4px 15px;
+        cursor: pointer;
+        width: 200px;
+        height: 100px;
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    .button:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -75px;
+        width: 300%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: skewX(-30deg);
+        transition: left 0.7s ease;
+    }
+    .button:hover:before {
+        left: 100%;
+    }
+    .button:hover {
+        background-color: #e69500;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+    }
+    h1 {
+        color: white;
+        margin-bottom: 40px;
+        font-size: 64px;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+</style>
+</head>
+<body>
+    <h1>Choose Language</h1>
+    <div class="buttons">
+        <a href="rus.html" class="button">RUS</a>
+        <a href="en.html" class="button">ENG</a>
+    </div>
+</body>
+</html>
