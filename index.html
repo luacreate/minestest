@@ -34,10 +34,8 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            margin-top: 20px;
         }
         .button {
-            position: relative;
             background: linear-gradient(45deg, #f39c12, #d35400);
             border: none;
             color: white;
@@ -48,34 +46,10 @@
             transition: all 0.4s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            z-index: 1;
-        }
-        .button:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -75%;
-            width: 200%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: skewX(-20deg);
-            transition: 0.5s;
-            z-index: 0;
-        }
-        .button:hover:before {
-            left: 100%;
         }
         .button:hover {
+            background-color: #e67e22;
             transform: translateY(-4px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-        }
-        .button:active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-        }
-        .button span {
-            position: relative;
-            z-index: 1;
         }
         input[type="text"] {
             width: 80%;
@@ -100,16 +74,16 @@
     <div class="container" id="languageSelection">
         <h2>Выберите язык</h2>
         <div class="language-buttons">
-            <button class="button" onclick="selectLanguage('ru')"><span>Русский</span></button>
-            <button class="button" onclick="selectLanguage('kz')"><span>Қазақша</span></button>
-            <button class="button" onclick="selectLanguage('uz')"><span>O'zbekcha</span></button>
+            <button class="button" onclick="selectLanguage('ru')">Русский</button>
+            <button class="button" onclick="selectLanguage('kz')">Қазақша</button>
+            <button class="button" onclick="selectLanguage('uz')">O'zbekcha</button>
         </div>
     </div>
 
     <div class="container" id="appContainer" style="display: none;">
         <h2 id="headerText">Введите ваш ID</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
-        <button class="button" onclick="checkAccess()" id="connectButton"><span>Подключиться</span></button>
+        <button class="button" onclick="checkAccess()" id="connectButton">Подключиться</button>
         <p id="message"></p>
     </div>
 
@@ -171,6 +145,14 @@
                 const response = await fetch(`/users?userId=${userId}`);
                 if (response.ok) {
                     const user = await response.json();
+
+                    // Проверка на администратора
+                    if (user.admin) {
+                        window.location.href = 'admin.html';
+                        return;
+                    }
+
+                    // Определяем платформу и перенаправляем на нужный файл
                     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
                     let platform = (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ? 'mines-ios' : 'mines-android-pc';
                     window.location.href = `${platform}/${selectedLanguage}.html`;
