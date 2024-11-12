@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Раздача всех статических файлов из корня
+app.use(express.static(path.join(__dirname)));
 
 // Новый путь к файлу users.json на диске Render
 const USERS_FILE_PATH = path.join('/var/data', 'users.json');
@@ -14,8 +14,13 @@ const USERS_FILE_PATH = path.join('/var/data', 'users.json');
 if (!fs.existsSync(USERS_FILE_PATH)) {
     // Создаем директорию /var/data, если она не существует
     fs.mkdirSync('/var/data', { recursive: true });
-    // Создаем пустой файл users.json
-    fs.writeFileSync(USERS_FILE_PATH, JSON.stringify({}));
+    // Инициализируем файл users.json с начальными значениями
+    const initialData = {
+        "123456": {
+            "admin": true
+        }
+    };
+    fs.writeFileSync(USERS_FILE_PATH, JSON.stringify(initialData, null, 2));
 }
 
 // Чтение данных из JSON-файла
