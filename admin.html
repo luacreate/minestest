@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ Панель 1win WebApp</title>
+    <title>Админ Панель WebApp</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,10 +41,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .user-item:last-child {
-            border-bottom: none;
         }
         button {
             padding: 10px 20px;
@@ -98,11 +94,19 @@
         .error {
             color: #e74c3c;
         }
+        .back-button {
+            margin-top: 20px;
+            background: #3498db;
+            padding: 10px 20px;
+        }
+        .back-button:hover {
+            background: #2980b9;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Админ Панель 1win WebApp</h2>
+        <h2>Админ Панель WebApp</h2>
         <div class="user-list" id="userList">
             <!-- Список пользователей будет загружаться здесь -->
         </div>
@@ -115,7 +119,10 @@
             <button onclick="addUser()">Добавить пользователя</button>
         </div>
         <p id="statusMessage"></p>
+        <!-- Кнопка "Назад" -->
+        <button class="back-button" onclick="goBack()">Назад</button>
     </div>
+
     <script>
         async function loadUsers() {
             try {
@@ -192,6 +199,10 @@
                 statusMessage.textContent = 'Ошибка при удалении пользователя';
                 statusMessage.className = 'error';
             }
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
         }
 
         // Загрузка пользователей при загрузке страницы
