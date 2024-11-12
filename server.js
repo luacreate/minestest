@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname))); // Раздача всех статических файлов из корня
 
 // Новый путь к файлу users.json на диске Render
 const USERS_FILE_PATH = path.join('/var/data', 'users.json');
@@ -76,7 +76,7 @@ app.post('/add-user', (req, res) => {
 
 // Обслуживание index.html для корневого маршрута
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
 // Запуск сервера
