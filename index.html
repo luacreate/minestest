@@ -65,11 +65,11 @@
             }
 
             try {
-                const response = await fetch('/users');
-                const users = await response.json();
-
-                if (users[userId]) {
-                    if (users[userId].admin) {
+                const response = await fetch(`/users?userId=${userId}`);
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    if (user.admin) {
                         window.location.href = 'admin.html';
                     } else {
                         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -85,6 +85,7 @@
                     messageElem.textContent = "Доступ запрещён";
                 }
             } catch (error) {
+                console.error('Ошибка при проверке ID:', error);
                 messageElem.textContent = "Ошибка при проверке ID. Попробуйте снова.";
             }
         }
