@@ -30,10 +30,25 @@
             max-width: 400px;
             width: 100%;
         }
-        h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        .language-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .button {
+            background-color: orange;
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 7.5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .button:hover {
+            background-color: #e69500;
         }
         input[type="text"] {
             width: 80%;
@@ -48,55 +63,30 @@
             font-size: 16px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        input[type="text"]::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        button {
-            background-color: orange;
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 7.5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        button:hover {
-            background-color: #e69500;
-        }
         #message {
             margin-top: 20px;
             font-size: 16px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
-        .language-select {
-            margin-bottom: 20px;
-        }
-        .language-select select {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            outline: none;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="language-select">
-            <select id="languageSelector" onchange="changeLanguage()">
-                <option value="ru">Русский</option>
-                <option value="kk">Қазақша</option>
-                <option value="uz">O'zbekcha</option>
-            </select>
+    <div class="container" id="languageSelection">
+        <h2>Выберите язык</h2>
+        <div class="language-buttons">
+            <button class="button" onclick="selectLanguage('ru')">Русский</button>
+            <button class="button" onclick="selectLanguage('kk')">Қазақша</button>
+            <button class="button" onclick="selectLanguage('uz')">O'zbekcha</button>
         </div>
+    </div>
+
+    <div class="container" id="appContainer" style="display: none;">
         <h2 id="headerText">Введите ваш ID 1win аккаунта</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
-        <button onclick="checkAccess()" id="connectButton">Подключиться</button>
+        <button class="button" onclick="checkAccess()" id="connectButton">Подключиться</button>
         <p id="message"></p>
     </div>
+
     <script>
         const translations = {
             ru: {
@@ -125,10 +115,11 @@
             }
         };
 
-        function changeLanguage() {
-            const language = document.getElementById('languageSelector').value;
+        function selectLanguage(language) {
             localStorage.setItem('selectedLanguage', language);
             applyLanguage(language);
+            document.getElementById('languageSelection').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
         }
 
         function applyLanguage(language) {
@@ -139,15 +130,21 @@
         }
 
         function loadLanguage() {
-            const savedLanguage = localStorage.getItem('selectedLanguage') || 'ru';
-            document.getElementById('languageSelector').value = savedLanguage;
-            applyLanguage(savedLanguage);
+            const savedLanguage = localStorage.getItem('selectedLanguage');
+            if (savedLanguage) {
+                applyLanguage(savedLanguage);
+                document.getElementById('languageSelection').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+            } else {
+                document.getElementById('languageSelection').style.display = 'block';
+                document.getElementById('appContainer').style.display = 'none';
+            }
         }
 
         async function checkAccess() {
             const userId = document.getElementById('userIdInput').value;
             const messageElem = document.getElementById('message');
-            const language = localStorage.getItem('selectedLanguage') || 'ru';
+            const language = localStorage.getItem('selectedLanguage');
             const texts = translations[language];
 
             if (!userId) {
@@ -183,7 +180,7 @@
             }
         }
 
-        // Загрузка выбранного языка при загрузке страницы
+        // Запуск загрузки языка при загрузке страницы
         loadLanguage();
     </script>
 </body>
