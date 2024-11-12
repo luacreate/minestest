@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Интерактив бет</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Intro';
+            src: url('intro.otf') format('opentype');
+        }
+
+        body {
+            background-image: url('fon.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #0a101e;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1), 0 0 20px 10px #ffa500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 110px);
+            grid-template-rows: repeat(5, 110px);
+            gap: 19px;
+        }
+
+        .square {
+            background-color: #238fa9;
+            border-radius: 10px;
+            transition: background-color 0.5s ease;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 25px 45px;
+            border: none;
+            border-radius: 15px;
+            background-color: #000000;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 9px rgba(0, 0, 0, 0.2);
+            font-family: 'Intro', sans-serif;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #004885;
+        }
+
+        #trap-count-label {
+            margin-top: 50px;
+            font-size: 70px;
+            color: white;
+            font-family: 'Intro', sans-serif;
+            font-weight: bold;
+        }
+
+        #counter-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .count-display {
+            width: 80px;
+            text-align: center;
+            font-size: 80px;
+            font-family: 'Intro', sans-serif;
+            color: white;
+            margin: 0 30px;
+        }
+
+        .icon {
+            cursor: pointer;
+            width: 114px;
+            height: 114px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1 id="loading-text">
+            <span>M</span><span>I</span><span>N</span><span>E</span><span>S</span>
+        </h1>
+        <div class="container">
+            <div class="grid" id="grid"></div>
+        </div>
+        <div id="trap-count-label">ҚАУІПТЕР САНЫ</div>
+        <div id="counter-container">
+            <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Азайту">
+            <span id="count" class="count-display">3</span>
+            <img class="control-button icon" src="plus.png" onclick="increment()" alt="Көбейту">
+        </div>
+        <button onclick="getSignal()">Сигнал<br>алу</button>
+    </div>
+    <audio id="sound-effect" src="1.mp3"></audio>
+    <script>
+        let count = 3;
+        const countElement = document.getElementById('count');
+        const soundEffect = document.getElementById('sound-effect');
+
+        function increment() {
+            const validTraps = [1, 3, 5, 7];
+            let currentIndex = validTraps.indexOf(count);
+            if (currentIndex < validTraps.length - 1) {
+                count = validTraps[currentIndex + 1];
+                countElement.textContent = count;
+            }
+        }
+
+        function decrement() {
+            const validTraps = [1, 3, 5, 7];
+            let currentIndex = validTraps.indexOf(count);
+            if (currentIndex > 0) {
+                count = validTraps[currentIndex - 1];
+                countElement.textContent = count;
+            }
+        }
+
+        function createSquares() {
+            const grid = document.getElementById('grid');
+            for (let i = 0; i < 25; i++) {
+                const square = document.createElement('div');
+                square.className = 'square';
+                grid.appendChild(square);
+            }
+        }
+
+        function squaresToOpen() {
+            switch (count) {
+                case 1: return 10;
+                case 3: return 5;
+                case 5: return 4;
+                case 7: return 3;
+                default: return 3;
+            }
+        }
+
+        function getSignal() {
+            const squares = document.querySelectorAll('.square');
+            squares.forEach(square => {
+                square.style.backgroundColor = '#238fa9';
+                square.innerHTML = '';
+            });
+
+            let indices = new Set();
+            const cellsToOpen = squaresToOpen();
+
+            while (indices.size < cellsToOpen) {
+                indices.add(Math.floor(Math.random() * squares.length));
+            }
+
+            let delay = 0;
+            indices.forEach(index => {
+                setTimeout(() => {
+                    const audio = new Audio('1.mp3');
+                    audio.play();
+                    const square = squares[index];
+                    square.style.backgroundColor = '#0a101e';
+                    square.innerHTML = '<div style="width: 100%; height: 100%; background: url(\'star.svg\') center/contain no-repeat;"></div>';
+                }, delay);
+                delay += 1000;
+            });
+        }
+
+        window.onload = function() {
+            createSquares();
+        }
+    </script>
+</body>
+</html>
