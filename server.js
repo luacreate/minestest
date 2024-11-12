@@ -38,8 +38,37 @@ app.post('/update-user', (req, res) => {
     });
 });
 
+// Добавление нового пользователя в JSON-файл
+app.post('/add-user', (req, res) => {
+    const { userId, admin } = req.body;
+
+    fs.readFile(path.join(__dirname, 'public', 'users.json'), 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).send('Ошибка чтения файла');
+        }
+
+        let users = JSON.parse(data);
+        if (users[userId]) {
+            return res.status(400).send('Пользователь с таким ID уже существует');
+        }
+
+        users[userId] = { admin };
+
+        fs.writeFile(path.join(__dirname, 'public', 'users.json'), JSON.stringify(users, null, 2), (err) => {
+            if (err) {
+                return res.status(500).send('Ошибка сохранения файла');
+            }
+            res.send('Пользователь успешно добавлен');
+        });
+    });
+});
+
+// Обслуживание index.html для корневого маршрута
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Запуск сервера
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-
