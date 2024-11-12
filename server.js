@@ -8,10 +8,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Новый путь к файлу users.json на диске Render
-const USERS_FILE_PATH = path.join('/data', 'users.json');
+const USERS_FILE_PATH = path.join('/var/data', 'users.json');
 
 // Инициализация файла users.json на диске при первом запуске
 if (!fs.existsSync(USERS_FILE_PATH)) {
+    // Создаем директорию /var/data, если она не существует
+    fs.mkdirSync('/var/data', { recursive: true });
+    // Создаем пустой файл users.json
     fs.writeFileSync(USERS_FILE_PATH, JSON.stringify({}));
 }
 
