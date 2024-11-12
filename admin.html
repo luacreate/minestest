@@ -1,102 +1,163 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ Панель</title>
+    <title>Админ Панель 1win WebApp</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            margin-top: 50px;
+            height: 100vh;
+            background: linear-gradient(to bottom, #2b5876, #4e4376);
+            color: white;
+            margin: 0;
         }
-        input {
-            margin: 10px;
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
             padding: 10px;
+            border-radius: 10px;
+        }
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .user-item:last-child {
+            border-bottom: none;
         }
         button {
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 10px 20px;
+            background: #e74c3c;
             border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
+            transition: background 0.3s;
         }
         button:hover {
-            background-color: #45a049;
+            background: #c0392b;
+        }
+        .add-user {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .add-user input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+        .add-user button {
+            background: #27ae60;
+        }
+        .add-user button:hover {
+            background: #219150;
         }
     </style>
 </head>
 <body>
-    <h2>Редактирование пользователей</h2>
-    <input type="text" id="userIdInput" placeholder="ID пользователя">
-    <select id="adminStatus">
-        <option value="true">Админ</option>
-        <option value="false">Не Админ</option>
-    </select>
-    <button onclick="updateUser()">Обновить</button>
-    <button onclick="addUser()">Добавить пользователя</button>
-    <p id="message"></p>
-
+    <div class="container">
+        <h2>Админ Панель 1win WebApp</h2>
+        <div class="user-list" id="userList">
+            <!-- Список пользователей будет загружаться здесь -->
+        </div>
+        <div class="add-user">
+            <input type="text" id="newUserId" placeholder="ID нового пользователя">
+            <button onclick="addUser()">Добавить пользователя</button>
+        </div>
+    </div>
     <script>
-        async function updateUser() {
-            const userId = document.getElementById('userIdInput').value;
-            const admin = document.getElementById('adminStatus').value === 'true';
-
-            if (!userId) {
-                document.getElementById('message').textContent = "Введите ID пользователя";
-                return;
-            }
-
+        async function loadUsers() {
             try {
-                const response = await fetch('/update-user', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId, admin })
-                });
+                const response = await fetch('/admin/users');
+                const users = await response.json();
+                const userListElem = document.getElementById('userList');
+                userListElem.innerHTML = '';
 
-                if (response.ok) {
-                    document.getElementById('message').textContent = "Пользователь успешно обновлен";
-                } else {
-                    document.getElementById('message').textContent = "Ошибка при обновлении пользователя";
-                }
+                users.forEach(user => {
+                    const userItem = document.createElement('div');
+                    userItem.classList.add('user-item');
+                    userItem.innerHTML = `
+                        <span>ID: ${user.userid}</span>
+                        <span>Админ: ${user.admin ? 'Да' : 'Нет'}</span>
+                        <button onclick="deleteUser('${user.userid}')">Удалить</button>
+                    `;
+                    userListElem.appendChild(userItem);
+                });
             } catch (error) {
-                document.getElementById('message').textContent = "Ошибка при отправке запроса";
+                console.error('Ошибка загрузки пользователей:', error);
             }
         }
 
         async function addUser() {
-            const userId = document.getElementById('userIdInput').value;
-            const admin = document.getElementById('adminStatus').value === 'true';
-
-            if (!userId) {
-                document.getElementById('message').textContent = "Введите ID пользователя";
+            const newUserId = document.getElementById('newUserId').value;
+            if (!newUserId) {
+                alert('Введите ID нового пользователя');
                 return;
             }
-
             try {
                 const response = await fetch('/add-user', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ userId, admin })
+                    body: JSON.stringify({ userId: newUserId, admin: false })
                 });
-
                 if (response.ok) {
-                    document.getElementById('message').textContent = "Пользователь успешно добавлен";
+                    alert('Пользователь добавлен');
+                    loadUsers();
                 } else {
-                    const errorText = await response.text();
-                    document.getElementById('message').textContent = `Ошибка: ${errorText}`;
+                    alert('Ошибка при добавлении пользователя');
                 }
             } catch (error) {
-                document.getElementById('message').textContent = "Ошибка при отправке запроса";
+                console.error('Ошибка при добавлении пользователя:', error);
             }
         }
+
+        async function deleteUser(userId) {
+            try {
+                const response = await fetch(`/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    alert('Пользователь удалён');
+                    loadUsers();
+                } else {
+                    alert('Ошибка при удалении пользователя');
+                }
+            } catch (error) {
+                console.error('Ошибка при удалении пользователя:', error);
+            }
+        }
+
+        // Загрузка пользователей при загрузке страницы
+        loadUsers();
     </script>
 </body>
 </html>
