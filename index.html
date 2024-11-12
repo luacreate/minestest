@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1win WebApp Access Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #3b4c5f, #1f2d40);
+            color: white;
+            margin: 0;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            background: #6c5ce7;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #8e7dd0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Введите ваш ID 1win аккаунта</h2>
+        <input type="text" id="userIdInput" placeholder="Ваш ID">
+        <button onclick="checkAccess()">Подключиться</button>
+        <p id="message"></p>
+    </div>
+    <script>
+        async function checkAccess() {
+            const userId = document.getElementById('userIdInput').value;
+            const messageElem = document.getElementById('message');
+
+            if (!userId) {
+                messageElem.textContent = "Введите ID";
+                return;
+            }
+
+            try {
+                const response = await fetch('/users');
+                const users = await response.json();
+
+                if (users[userId]) {
+                    if (users[userId].admin) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                            window.location.href = 'mines-ios/index.html';
+                        } else if (/android/i.test(userAgent)) {
+                            window.location.href = 'mines-android-pc/index.html';
+                        } else {
+                            window.location.href = 'mines-android-pc/index.html';
+                        }
+                    }
+                } else {
+                    messageElem.textContent = "Доступ запрещён";
+                }
+            } catch (error) {
+                messageElem.textContent = "Ошибка при проверке ID. Попробуйте снова.";
+            }
+        }
+    </script>
+</body>
+</html>
