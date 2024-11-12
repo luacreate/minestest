@@ -23,8 +23,18 @@ pool.query(`
     )
 `).then(() => {
     console.log('Таблица пользователей проверена или создана.');
+
+    // Проверка наличия пользователей в таблице и добавление первого администратора
+    return pool.query('SELECT COUNT(*) FROM users');
+}).then((result) => {
+    const userCount = parseInt(result.rows[0].count, 10);
+    if (userCount === 0) {
+        return pool.query('INSERT INTO users (userId, admin) VALUES ($1, $2)', ['9777771', true]);
+    }
+}).then(() => {
+    console.log('Первый администратор успешно добавлен (userId: 9777771).');
 }).catch((err) => {
-    console.error('Ошибка создания таблицы пользователей:', err);
+    console.error('Ошибка при инициализации администратора:', err);
 });
 
 // Чтение данных из базы данных для проверки пользователя
