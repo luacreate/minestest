@@ -68,7 +68,6 @@
 
         button:hover {
             background-color: #0056b3;
-            transform: translateY(-1px);
         }
 
         button:active {
@@ -107,7 +106,7 @@
 
         #loading-text {
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 20px;
             font-family: 'Intro', sans-serif;
         }
 
@@ -119,34 +118,38 @@
         }
 
         @keyframes bounce {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-5px); }
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
     <div class="main-container">
+        <!-- Логотип Mines OpenAI -->
         <h1 id="loading-text">
             <span>M</span><span>I</span><span>N</span><span>E</span><span>S</span>
+            <span style="margin-left: 10px;"></span>
+            <span>O</span><span>P</span><span>E</span><span>N</span><span>A</span><span>I</span>
         </h1>
         <div class="container">
-            <div class="grid" id="grid"></div>
+            <div class="grid" id="grid">
+                <!-- Квадраты добавляются через JavaScript -->
+            </div>
         </div>
-        <div id="trap-count-label">КОЛ-ВО ЛОВУШЕК</div>
+        <div id="trap-count-label">РЕЖИМ</div>
         <div id="counter-container">
-            <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Minus">
-            <span id="count" class="count-display">3</span>
-            <img class="control-button icon" src="plus.png" onclick="increment()" alt="Plus">
+            <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Уменьшить">
+            <span id="count" class="count-display">2</span>
+            <img class="control-button icon" src="plus.png" onclick="increment()" alt="Увеличить">
         </div>
         <button onclick="getSignal()">Получить<br>сигнал</button>
     </div>
     <audio id="sound-effect" src="1.mp3"></audio>
 
     <script>
-        let count = 3; // Начальное количество ловушек
+        let count = 2;
         const countElement = document.getElementById('count');
-        const soundEffect = document.getElementById('sound-effect');
-        const validTraps = [3, 5, 7]; // Допустимые значения количества ловушек
+        const validTraps = [2, 3];
 
         function increment() {
             let currentIndex = validTraps.indexOf(count);
@@ -164,17 +167,17 @@
             }
         }
 
-        function squaresToOpen() {
-            switch (count) {
-                case 3:
-                    return 5;
-                case 5:
-                    return 4;
-                case 7:
-                    return 3;
-                default:
-                    return 3;
+        function createSquares() {
+            const grid = document.getElementById('grid');
+            for (let i = 0; i < 25; i++) {
+                const square = document.createElement('div');
+                square.className = 'square';
+                grid.appendChild(square);
             }
+        }
+
+        function squaresToOpen() {
+            return 4; // Всегда открываем 4 звезды, независимо от выбранного режима
         }
 
         function getSignal() {
@@ -202,15 +205,6 @@
                 }, delay);
                 delay += 1000;
             });
-        }
-
-        function createSquares() {
-            const grid = document.getElementById('grid');
-            for (let i = 0; i < 25; i++) {
-                const square = document.createElement('div');
-                square.className = 'square';
-                grid.appendChild(square);
-            }
         }
 
         window.onload = function() {
