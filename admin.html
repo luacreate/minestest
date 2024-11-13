@@ -16,17 +16,17 @@
             margin: 0;
         }
         .container {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
         }
         h2 {
             margin-bottom: 20px;
-            font-size: 28px;
+            font-size: 24px;
         }
         .user-list {
             max-height: 300px;
@@ -41,15 +41,22 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .user-item:last-child {
+            border-bottom: none;
         }
         button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             background: #e74c3c;
             border: none;
             border-radius: 5px;
             color: white;
-            font-size: 16px;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #c0392b;
         }
         .add-user {
             margin-top: 20px;
@@ -58,24 +65,32 @@
             align-items: center;
         }
         .add-user input[type="text"] {
-            width: 100%;
+            width: 80%;
             padding: 10px;
             margin-bottom: 10px;
             border: none;
             border-radius: 5px;
+            outline: none;
         }
         .add-user select {
+            width: 80%;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
+            outline: none;
             background: #34495e;
             color: white;
         }
         .add-user button {
             background: #27ae60;
         }
+        .add-user button:hover {
+            background: #219150;
+        }
         #statusMessage {
             margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
         }
         .success {
             color: #2ecc71;
@@ -87,6 +102,9 @@
             margin-top: 20px;
             background: #3498db;
             padding: 10px 20px;
+        }
+        .back-button:hover {
+            background: #2980b9;
         }
     </style>
 </head>
@@ -105,93 +123,94 @@
             <button onclick="addUser()">Добавить пользователя</button>
         </div>
         <p id="statusMessage"></p>
-        <!-- Кнопка "Назад" -->
         <button class="back-button" onclick="goBack()">Назад</button>
     </div>
 
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyAYX6P32DPnxXSav4Du073jAHDGuIlxOHgRwGtcGEC-ZMFa6d92p8SP_wBGPsMVv7p/exec';
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyAYX6P32DPnxXSav4Du073jAHDGuIlxOHgRwGtcGEC-ZMFa6d92p8SP_wBGPsMVv7p/exec';
 
-    async function loadUsers() {
-        try {
-            const response = await fetch(`${scriptURL}?action=get`);
-            const users = await response.json();
-            const userListElem = document.getElementById('userList');
-            userListElem.innerHTML = '';
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${scriptURL}?action=get`);
+                if (!response.ok) throw new Error('Ошибка при загрузке пользователей');
 
-            users.forEach(user => {
-                const userItem = document.createElement('div');
-                userItem.classList.add('user-item');
-                userItem.innerHTML = `
-                    <span>ID: ${user.userId}</span>
-                    <span>Админ: ${user.isAdmin ? 'Да' : 'Нет'}</span>
-                    <button onclick="deleteUser('${user.userId}')">Удалить</button>
-                `;
-                userListElem.appendChild(userItem);
-            });
-        } catch (error) {
-            console.error('Ошибка загрузки пользователей:', error);
-        }
-    }
+                const users = await response.json();
+                const userListElem = document.getElementById('userList');
+                userListElem.innerHTML = '';
 
-    async function addUser() {
-        const newUserId = document.getElementById('newUserId').value;
-        const userRole = document.getElementById('userRole').value === 'true';
-        const statusMessage = document.getElementById('statusMessage');
-
-        if (!newUserId) {
-            statusMessage.textContent = 'Введите ID нового пользователя';
-            statusMessage.className = 'error';
-            return;
+                users.forEach(user => {
+                    const userItem = document.createElement('div');
+                    userItem.classList.add('user-item');
+                    userItem.innerHTML = `
+                        <span>ID: ${user.userId}</span>
+                        <span>Админ: ${user.isAdmin ? 'Да' : 'Нет'}</span>
+                        <button onclick="deleteUser('${user.userId}')">Удалить</button>
+                    `;
+                    userListElem.appendChild(userItem);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                alert('Не удалось загрузить пользователей.');
+            }
         }
 
-        try {
-            const response = await fetch(`${scriptURL}?action=add&userId=${newUserId}&isAdmin=${userRole}`);
-            const result = await response.text();
+        async function addUser() {
+            const newUserId = document.getElementById('newUserId').value;
+            const userRole = document.getElementById('userRole').value === 'true';
+            const statusMessage = document.getElementById('statusMessage');
 
-            if (result === 'User added') {
-                statusMessage.textContent = 'Пользователь добавлен';
-                statusMessage.className = 'success';
-                loadUsers();
-            } else {
-                statusMessage.textContent = 'Ошибка: ' + result;
+            if (!newUserId) {
+                statusMessage.textContent = 'Введите ID нового пользователя';
+                statusMessage.className = 'error';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${scriptURL}?action=add&userId=${newUserId}&isAdmin=${userRole}`);
+                const result = await response.text();
+
+                if (result === 'User added') {
+                    statusMessage.textContent = 'Пользователь добавлен';
+                    statusMessage.className = 'success';
+                    loadUsers();
+                } else {
+                    statusMessage.textContent = 'Ошибка при добавлении пользователя';
+                    statusMessage.className = 'error';
+                }
+            } catch (error) {
+                console.error('Ошибка при добавлении пользователя:', error);
+                statusMessage.textContent = 'Ошибка при добавлении пользователя';
                 statusMessage.className = 'error';
             }
-        } catch (error) {
-            console.error('Ошибка при добавлении пользователя:', error);
-            statusMessage.textContent = 'Ошибка при добавлении пользователя';
-            statusMessage.className = 'error';
         }
-    }
 
-    async function deleteUser(userId) {
-        const statusMessage = document.getElementById('statusMessage');
-        try {
-            const response = await fetch(`${scriptURL}?action=delete&userId=${userId}`);
-            const result = await response.text();
+        async function deleteUser(userId) {
+            const statusMessage = document.getElementById('statusMessage');
+            try {
+                const response = await fetch(`${scriptURL}?action=delete&userId=${userId}`);
+                const result = await response.text();
 
-            if (result === 'User deleted') {
-                statusMessage.textContent = 'Пользователь удалён';
-                statusMessage.className = 'success';
-                loadUsers();
-            } else {
-                statusMessage.textContent = 'Ошибка: ' + result;
+                if (result === 'User deleted') {
+                    statusMessage.textContent = 'Пользователь удалён';
+                    statusMessage.className = 'success';
+                    loadUsers();
+                } else {
+                    statusMessage.textContent = 'Ошибка при удалении пользователя';
+                    statusMessage.className = 'error';
+                }
+            } catch (error) {
+                console.error('Ошибка при удалении пользователя:', error);
+                statusMessage.textContent = 'Ошибка при удалении пользователя';
                 statusMessage.className = 'error';
             }
-        } catch (error) {
-            console.error('Ошибка при удалении пользователя:', error);
-            statusMessage.textContent = 'Ошибка при удалении пользователя';
-            statusMessage.className = 'error';
         }
-    }
-</script>
 
         function goBack() {
             window.location.href = 'index.html';
         }
 
         // Загрузка пользователей при загрузке страницы
-        loadUsers();
+        document.addEventListener('DOMContentLoaded', loadUsers);
     </script>
 </body>
 </html>
