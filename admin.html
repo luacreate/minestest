@@ -109,83 +109,82 @@
         <button class="back-button" onclick="goBack()">Назад</button>
     </div>
 
-    <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyAYX6P32DPnxXSav4Du073jAHDGuIlxOHgRwGtcGEC-ZMFa6d92p8SP_wBGPsMVv7p/exec';
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyAYX6P32DPnxXSav4Du073jAHDGuIlxOHgRwGtcGEC-ZMFa6d92p8SP_wBGPsMVv7p/exec';
 
-        async function loadUsers() {
-            try {
-                const response = await fetch(scriptURL);
-                const users = await response.json();
-                const userListElem = document.getElementById('userList');
-                userListElem.innerHTML = '';
+    async function loadUsers() {
+        try {
+            const response = await fetch(`${scriptURL}?action=get`);
+            const users = await response.json();
+            const userListElem = document.getElementById('userList');
+            userListElem.innerHTML = '';
 
-                users.forEach(user => {
-                    const userItem = document.createElement('div');
-                    userItem.classList.add('user-item');
-                    userItem.innerHTML = `
-                        <span>ID: ${user.userId}</span>
-                        <span>Админ: ${user.isAdmin ? 'Да' : 'Нет'}</span>
-                        <button onclick="deleteUser('${user.userId}')">Удалить</button>
-                    `;
-                    userListElem.appendChild(userItem);
-                });
-            } catch (error) {
-                console.error('Ошибка загрузки пользователей:', error);
-            }
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.classList.add('user-item');
+                userItem.innerHTML = `
+                    <span>ID: ${user.userId}</span>
+                    <span>Админ: ${user.isAdmin ? 'Да' : 'Нет'}</span>
+                    <button onclick="deleteUser('${user.userId}')">Удалить</button>
+                `;
+                userListElem.appendChild(userItem);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки пользователей:', error);
+        }
+    }
+
+    async function addUser() {
+        const newUserId = document.getElementById('newUserId').value;
+        const userRole = document.getElementById('userRole').value === 'true';
+        const statusMessage = document.getElementById('statusMessage');
+
+        if (!newUserId) {
+            statusMessage.textContent = 'Введите ID нового пользователя';
+            statusMessage.className = 'error';
+            return;
         }
 
-        async function addUser() {
-            const newUserId = document.getElementById('newUserId').value;
-            const userRole = document.getElementById('userRole').value === 'true';
-            const statusMessage = document.getElementById('statusMessage');
+        try {
+            const response = await fetch(`${scriptURL}?action=add&userId=${newUserId}&isAdmin=${userRole}`);
+            const result = await response.text();
 
-            if (!newUserId) {
-                statusMessage.textContent = 'Введите ID нового пользователя';
-                statusMessage.className = 'error';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${scriptURL}?action=add&userId=${newUserId}&isAdmin=${userRole}`, {
-                    method: 'GET'
-                });
-
-                if (response.ok) {
-                    statusMessage.textContent = 'Пользователь добавлен';
-                    statusMessage.className = 'success';
-                    loadUsers();
-                } else {
-                    statusMessage.textContent = 'Ошибка при добавлении пользователя';
-                    statusMessage.className = 'error';
-                }
-            } catch (error) {
-                console.error('Ошибка при добавлении пользователя:', error);
-                statusMessage.textContent = 'Ошибка при добавлении пользователя';
+            if (result === 'User added') {
+                statusMessage.textContent = 'Пользователь добавлен';
+                statusMessage.className = 'success';
+                loadUsers();
+            } else {
+                statusMessage.textContent = 'Ошибка: ' + result;
                 statusMessage.className = 'error';
             }
+        } catch (error) {
+            console.error('Ошибка при добавлении пользователя:', error);
+            statusMessage.textContent = 'Ошибка при добавлении пользователя';
+            statusMessage.className = 'error';
         }
+    }
 
-        async function deleteUser(userId) {
-            const statusMessage = document.getElementById('statusMessage');
-            try {
-                const response = await fetch(`${scriptURL}?action=delete&userId=${userId}`, {
-                    method: 'GET'
-                });
+    async function deleteUser(userId) {
+        const statusMessage = document.getElementById('statusMessage');
+        try {
+            const response = await fetch(`${scriptURL}?action=delete&userId=${userId}`);
+            const result = await response.text();
 
-                if (response.ok) {
-                    statusMessage.textContent = 'Пользователь удалён';
-                    statusMessage.className = 'success';
-                    loadUsers();
-                } else {
-                    statusMessage.textContent = 'Ошибка при удалении пользователя';
-                    statusMessage.className = 'error';
-                }
-            } catch (error) {
-                console.error('Ошибка при удалении пользователя:', error);
-                statusMessage.textContent = 'Ошибка при удалении пользователя';
+            if (result === 'User deleted') {
+                statusMessage.textContent = 'Пользователь удалён';
+                statusMessage.className = 'success';
+                loadUsers();
+            } else {
+                statusMessage.textContent = 'Ошибка: ' + result;
                 statusMessage.className = 'error';
             }
+        } catch (error) {
+            console.error('Ошибка при удалении пользователя:', error);
+            statusMessage.textContent = 'Ошибка при удалении пользователя';
+            statusMessage.className = 'error';
         }
+    }
+</script>
 
         function goBack() {
             window.location.href = 'index.html';
