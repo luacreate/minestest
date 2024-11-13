@@ -108,35 +108,20 @@
             text-align: center;
             margin-bottom: 20px;
             font-family: 'Intro', sans-serif;
-        }
-
-        #loading-text span {
-            display: inline-block;
-            animation: bounce 0.3s ease infinite alternate;
-            font-size: 50px;
+            font-size: 40px;
             color: rgb(209, 178, 5);
-        }
-
-        @keyframes bounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10px); }
+            text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc;
         }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- Логотип Mines OpenAI -->
-        <h1 id="loading-text">
-            <span>M</span><span>I</span><span>N</span><span>E</span><span>S</span>
-            <span style="margin-left: 10px;"></span>
-            <span>O</span><span>P</span><span>E</span><span>N</span><span>A</span><span>I</span>
-        </h1>
+        <!-- Логотип Mines OpenAI в одну строку -->
+        <h1 id="loading-text">MINES OPENAI</h1>
         <div class="container">
-            <div class="grid" id="grid">
-                <!-- Квадраты добавляются через JavaScript -->
-            </div>
+            <div class="grid" id="grid"></div>
         </div>
-        <div id="trap-count-label">РЕЖИМ</div>
+        <div id="trap-count-label">Кол-во ловушек</div>
         <div id="counter-container">
             <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Уменьшить">
             <span id="count" class="count-display">2</span>
@@ -177,7 +162,7 @@
         }
 
         function squaresToOpen() {
-            return 4; // Всегда открываем 4 звезды, независимо от выбранного режима
+            return 4;
         }
 
         function getSignal() {
