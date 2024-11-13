@@ -30,11 +30,6 @@
             max-width: 400px;
             width: 100%;
         }
-        .language-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
         .button {
             background-color: orange;
             border: none;
@@ -68,16 +63,7 @@
     </style>
 </head>
 <body>
-    <div class="container" id="languageSelection">
-        <h2>Выберите язык</h2>
-        <div class="language-buttons">
-            <button class="button" onclick="selectLanguage('ru')">Русский</button>
-            <button class="button" onclick="selectLanguage('kz')">Қазақша</button>
-            <button class="button" onclick="selectLanguage('uz')">O'zbekcha</button>
-        </div>
-    </div>
-
-    <div class="container" id="appContainer" style="display: none;">
+    <div class="container" id="appContainer">
         <h2 id="headerText">Введите ваш ID</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
         <button class="button" onclick="checkAccess()" id="connectButton">Подключиться</button>
@@ -86,76 +72,34 @@
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz68ye-47fzdi0L3y_4lZTSPgP03VuBkpIhvfeHZ6kxg8-aZsqnYyHrumcdsHZvlNXn/exec';
-        let selectedLanguage;
-
-        const translations = {
-            ru: {
-                header: "Введите ваш ID",
-                placeholder: "Ваш ID",
-                button: "Подключиться",
-                enterId: "Введите ID",
-                accessDenied: "Доступ запрещён",
-                error: "Ошибка при проверке ID. Попробуйте снова."
-            },
-            kz: {
-                header: "ID енгізіңіз",
-                placeholder: "Сіздің ID",
-                button: "Қосылу",
-                enterId: "ID енгізіңіз",
-                accessDenied: "Қол жеткізу тыйым салынған",
-                error: "ID тексеру кезінде қате болды. Қайталап көріңіз."
-            },
-            uz: {
-                header: "ID kiriting",
-                placeholder: "Sizning ID",
-                button: "Ulanish",
-                enterId: "ID kiriting",
-                accessDenied: "Kirish taqiqlangan",
-                error: "ID tekshirishda xatolik yuz berdi. Qayta urinib ko'ring."
-            }
-        };
-
-        function selectLanguage(language) {
-            selectedLanguage = language;
-            applyLanguage(language);
-            document.getElementById('languageSelection').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
-        }
-
-        function applyLanguage(language) {
-            const texts = translations[language];
-            document.getElementById('headerText').textContent = texts.header;
-            document.getElementById('userIdInput').placeholder = texts.placeholder;
-            document.getElementById('connectButton').textContent = texts.button;
-        }
 
         async function checkAccess() {
             const userId = document.getElementById('userIdInput').value;
             const messageElem = document.getElementById('message');
-            const texts = translations[selectedLanguage];
 
             if (!userId) {
-                messageElem.textContent = texts.enterId;
+                messageElem.textContent = 'Введите ID';
                 return;
             }
 
             try {
-                const response = await fetch(`${scriptURL}?userId=${userId}`);
+                // Запрашиваем данные с параметром action=get
+                const response = await fetch(`${scriptURL}?action=get`);
                 const users = await response.json();
 
+                // Проверяем, есть ли введённый ID в базе данных
                 const userExists = users.some(user => user.userId.toString() === userId);
                 
                 if (userExists) {
-                    // Перенаправление на нужную страницу в зависимости от устройства
                     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
                     let platform = (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ? 'mines-ios' : 'mines-android-pc';
-                    window.location.href = `${platform}/${selectedLanguage}.html`;
+                    window.location.href = `${platform}/ru.html`;
                 } else {
-                    messageElem.textContent = texts.accessDenied;
+                    messageElem.textContent = 'Доступ запрещён';
                 }
             } catch (error) {
                 console.error('Ошибка при проверке ID:', error);
-                messageElem.textContent = texts.error;
+                messageElem.textContent = 'Ошибка при проверке ID. Попробуйте снова.';
             }
         }
     </script>
