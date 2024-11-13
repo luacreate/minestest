@@ -64,7 +64,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 2px 3.5px rgba(0, 0, 0, 0.15);
             font-family: 'Intro', sans-serif;
-            text-align: center;
         }
 
         button:hover {
@@ -104,20 +103,6 @@
             width: 50px;
             height: 50px;
         }
-
-        #loading-text {
-            cursor: default;
-            text-align: center;
-            margin-bottom: 8px;
-            font-family: 'Intro', sans-serif;
-        }
-
-        #loading-text span {
-            display: inline-block;
-            animation: bounce 0.3s ease infinite alternate;
-            font-size: 50px;
-            color: rgb(209, 178, 5);
-        }
     </style>
 </head>
 <body>
@@ -138,13 +123,14 @@
         </div>
         <button onclick="getSignal()">Signal<br>olish</button>
     </div>
-    <audio id="sound-effect" src="1.mp3"></audio> <!-- Ovoz effekti -->
+    <audio id="sound-effect" src="1.mp3"></audio>
+
     <script>
         let count = 3;
         const countElement = document.getElementById('count');
+        const validTraps = [3, 5, 7]; // Faqatgina 3, 5 va 7 tazyiqlar
 
         function increment() {
-            const validTraps = [1, 3, 5, 7];
             let currentIndex = validTraps.indexOf(count);
             if (currentIndex < validTraps.length - 1) {
                 count = validTraps[currentIndex + 1];
@@ -153,7 +139,6 @@
         }
 
         function decrement() {
-            const validTraps = [1, 3, 5, 7];
             let currentIndex = validTraps.indexOf(count);
             if (currentIndex > 0) {
                 count = validTraps[currentIndex - 1];
@@ -172,7 +157,6 @@
 
         function squaresToOpen() {
             switch (count) {
-                case 1: return 10;
                 case 3: return 5;
                 case 5: return 4;
                 case 7: return 3;
