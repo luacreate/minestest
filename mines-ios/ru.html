@@ -64,7 +64,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 9px rgba(0, 0, 0, 0.2);
             font-family: 'Intro', sans-serif;
-            text-align: center;
         }
 
         button:hover {
@@ -104,20 +103,25 @@
             width: 114px;
             height: 114px;
         }
+
+        #loading-text {
+            font-family: 'Intro', sans-serif;
+            font-size: 70px;
+            color: #ffd700;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <h1 id="loading-text">M I N E S</h1>
+        <h1 id="loading-text">MINES OpenAI</h1>
         <div class="container">
-            <div class="grid" id="grid">
-                <!-- Квадраты будут добавлены здесь с помощью JavaScript -->
-            </div>
+            <div class="grid" id="grid"></div>
         </div>
         <div id="trap-count-label">КОЛ-ВО ЛОВУШЕК</div>
         <div id="counter-container">
             <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Минус">
-            <span id="count" class="count-display">3</span>
+            <span id="count" class="count-display">2</span>
             <img class="control-button icon" src="plus.png" onclick="increment()" alt="Плюс">
         </div>
         <button onclick="getSignal()">Получить сигнал</button>
@@ -125,11 +129,10 @@
     <audio id="sound-effect" src="1.mp3"></audio>
 
     <script>
-        let count = 3;
+        let count = 2;
         const countElement = document.getElementById('count');
-        const validTraps = [3, 5, 7]; // Допустимые значения ловушек
+        const validTraps = [2, 3];
 
-        // Функция увеличения количества ловушек
         function increment() {
             let currentIndex = validTraps.indexOf(count);
             if (currentIndex < validTraps.length - 1) {
@@ -138,7 +141,6 @@
             }
         }
 
-        // Функция уменьшения количества ловушек
         function decrement() {
             let currentIndex = validTraps.indexOf(count);
             if (currentIndex > 0) {
@@ -147,9 +149,9 @@
             }
         }
 
-        // Создание ячеек на сетке
         function createSquares() {
             const grid = document.getElementById('grid');
+            grid.innerHTML = '';
             for (let i = 0; i < 25; i++) {
                 const square = document.createElement('div');
                 square.className = 'square';
@@ -157,21 +159,10 @@
             }
         }
 
-        // Определение количества ячеек для открытия в зависимости от количества ловушек
         function squaresToOpen() {
-            switch (count) {
-                case 3:
-                    return 5;
-                case 5:
-                    return 4;
-                case 7:
-                    return 3;
-                default:
-                    return 3;
-            }
+            return 4;
         }
 
-        // Функция получения сигнала и открытия ячеек
         function getSignal() {
             const squares = document.querySelectorAll('.square');
             squares.forEach(square => {
