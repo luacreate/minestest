@@ -103,27 +103,36 @@
             width: 114px;
             height: 114px;
         }
+
+        #loading-text {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Intro', sans-serif;
+            font-size: 50px;
+            color: #ffd700;
+        }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <h1 id="loading-text">M I N E S</h1>
+        <h1 id="loading-text">MINES OPENAI</h1>
         <div class="container">
             <div class="grid" id="grid"></div>
         </div>
         <div id="trap-count-label">ҚАУІПТЕР САНЫ</div>
         <div id="counter-container">
             <img class="control-button icon" src="minus.png" onclick="decrement()" alt="Азайту">
-            <span id="count" class="count-display">3</span>
+            <span id="count" class="count-display">2</span>
             <img class="control-button icon" src="plus.png" onclick="increment()" alt="Көбейту">
         </div>
         <button onclick="getSignal()">Сигнал<br>алу</button>
     </div>
     <audio id="sound-effect" src="1.mp3"></audio>
+
     <script>
-        let count = 3;
+        let count = 2;
         const countElement = document.getElementById('count');
-        const validTraps = [3, 5, 7]; // Режимы 1 убраны
+        const validTraps = [2, 3];
 
         function increment() {
             let currentIndex = validTraps.indexOf(count);
@@ -143,6 +152,7 @@
 
         function createSquares() {
             const grid = document.getElementById('grid');
+            grid.innerHTML = '';
             for (let i = 0; i < 25; i++) {
                 const square = document.createElement('div');
                 square.className = 'square';
@@ -151,12 +161,7 @@
         }
 
         function squaresToOpen() {
-            switch (count) {
-                case 3: return 5;
-                case 5: return 4;
-                case 7: return 3;
-                default: return 3;
-            }
+            return 4;
         }
 
         function getSignal() {
