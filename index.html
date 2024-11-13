@@ -29,7 +29,6 @@
             text-align: center;
             max-width: 400px;
             width: 100%;
-            z-index: 10;
         }
         .button {
             background-color: orange;
@@ -102,7 +101,6 @@
 
         function selectLanguage(language) {
             selectedLanguage = language;
-            localStorage.setItem('selectedLanguage', language);
             applyLanguage(language);
             document.getElementById('languageSelection').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
@@ -119,7 +117,7 @@
             const messageElem = document.getElementById('message');
 
             if (!userId) {
-                messageElem.textContent = 'Введите ID';
+                messageElem.textContent = translations[selectedLanguage].enterId;
                 return;
             }
 
@@ -135,27 +133,18 @@
                     const platform = (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ? 'mines-ios' : 'mines-android-pc';
                     window.location.href = `${platform}/${selectedLanguage}.html`;
                 } else {
-                    messageElem.textContent = 'Доступ запрещён';
+                    messageElem.textContent = translations[selectedLanguage].accessDenied;
                 }
             } catch (error) {
                 console.error('Ошибка при проверке ID:', error);
-                messageElem.textContent = 'Ошибка при проверке ID. Попробуйте снова.';
+                messageElem.textContent = translations[selectedLanguage].error;
             }
         }
 
-        function loadLanguage() {
-            const savedLanguage = localStorage.getItem('selectedLanguage');
-            if (savedLanguage) {
-                selectedLanguage = savedLanguage;
-                applyLanguage(savedLanguage);
-                document.getElementById('languageSelection').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-            } else {
-                document.getElementById('languageSelection').style.display = 'block';
-            }
-        }
-
-        window.onload = loadLanguage;
+        window.onload = function() {
+            document.getElementById('languageSelection').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+        };
     </script>
 </body>
 </html>
