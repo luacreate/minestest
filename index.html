@@ -63,36 +63,43 @@
     </style>
 </head>
 <body>
-    <div class="container" id="appContainer">
-        <h2 id="headerText">Введите ваш ID</h2>
+    <div class="container">
+        <h2>Введите ваш ID</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
-        <button class="button" onclick="checkAccess()" id="connectButton">Подключиться</button>
+        <button class="button" onclick="checkAccess()">Подключиться</button>
         <p id="message"></p>
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbz68ye-47fzdi0L3y_4lZTSPgP03VuBkpIhvfeHZ6kxg8-aZsqnYyHrumcdsHZvlNXn/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzVeVytQTqzYOYqtdRbbtMH4ncfXt8gnQN2Zz9f9S3TYPCkO3PQkOR_4vYl8v7qROCY/exec';
 
         async function checkAccess() {
             const userId = document.getElementById('userIdInput').value;
             const messageElem = document.getElementById('message');
 
+            // Проверка, если поле ID пустое
             if (!userId) {
                 messageElem.textContent = 'Введите ID';
                 return;
             }
 
             try {
-                // Запрашиваем данные с параметром action=get
+                // Отправляем запрос к Google Apps Script с параметром action=get
                 const response = await fetch(`${scriptURL}?action=get`);
+                
+                if (!response.ok) {
+                    throw new Error('Ошибка сети');
+                }
+
                 const users = await response.json();
 
-                // Проверяем, есть ли введённый ID в базе данных
+                // Проверка, если введённый ID присутствует в базе данных
                 const userExists = users.some(user => user.userId.toString() === userId);
                 
                 if (userExists) {
+                    // Определяем платформу для перенаправления
                     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                    let platform = (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ? 'mines-ios' : 'mines-android-pc';
+                    const platform = (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ? 'mines-ios' : 'mines-android-pc';
                     window.location.href = `${platform}/ru.html`;
                 } else {
                     messageElem.textContent = 'Доступ запрещён';
