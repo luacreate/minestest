@@ -60,11 +60,25 @@
             margin-top: 20px;
             font-size: 16px;
         }
+        .language-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Введите ваш ID</h2>
+    <div class="container" id="languageSelection">
+        <h2>Выберите язык</h2>
+        <div class="language-buttons">
+            <button class="button" onclick="selectLanguage('ru')">Русский</button>
+            <button class="button" onclick="selectLanguage('kz')">Қазақша</button>
+            <button class="button" onclick="selectLanguage('uz')">O'zbekcha</button>
+        </div>
+    </div>
+
+    <div class="container" id="appContainer" style="display: none;">
+        <h2 id="headerText">Введите ваш ID</h2>
         <input type="text" id="userIdInput" placeholder="Ваш ID">
         <button class="button" onclick="checkAccess()">Подключиться</button>
         <p id="message"></p>
@@ -72,43 +86,72 @@
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzVeVytQTqzYOYqtdRbbtMH4ncfXt8gnQN2Zz9f9S3TYPCkO3PQkOR_4vYl8v7qROCY/exec';
+        let selectedLanguage;
+        
+        const translations = {
+            ru: { header: "Введите ваш ID", placeholder: "Ваш ID", button: "Подключиться", enterId: "Введите ID", accessDenied: "Доступ запрещён", error: "Ошибка при проверке ID. Попробуйте снова." },
+            kz: { header: "ID енгізіңіз", placeholder: "Сіздің ID", button: "Қосылу", enterId: "ID енгізіңіз", accessDenied: "Қол жеткізу тыйым салынған", error: "ID тексеру кезінде қате болды. Қайталап көріңіз." },
+            uz: { header: "ID kiriting", placeholder: "Sizning ID", button: "Ulanish", enterId: "ID kiriting", accessDenied: "Kirish taqiqlangan", error: "ID tekshirishda xatolik yuz berdi. Qayta urinib ko'ring." }
+        };
+
+        function selectLanguage(language) {
+            selectedLanguage = language;
+            localStorage.setItem('selectedLanguage', language);
+            applyLanguage(language);
+            document.getElementById('languageSelection').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+        }
+
+        function applyLanguage(language) {
+            const texts = translations[language];
+            document.getElementById('headerText').textContent = texts.header;
+            document.getElementById('userIdInput').placeholder = texts.placeholder;
+            document.getElementById('connectButton').textContent = texts.button;
+        }
 
         async function checkAccess() {
             const userId = document.getElementById('userIdInput').value;
             const messageElem = document.getElementById('message');
+            const texts = translations[selectedLanguage];
 
-            // Проверка, если поле ID пустое
             if (!userId) {
-                messageElem.textContent = 'Введите ID';
+                messageElem.textContent = texts.enterId;
                 return;
             }
 
             try {
-                // Отправляем запрос к Google Apps Script с параметром action=get
                 const response = await fetch(`${scriptURL}?action=get`);
-                
-                if (!response.ok) {
-                    throw new Error('Ошибка сети');
-                }
-
+                if (!response.ok) throw new Error('Ошибка сети');
                 const users = await response.json();
 
-                // Проверка, если введённый ID присутствует в базе данных
                 const userExists = users.some(user => user.userId.toString() === userId);
                 
                 if (userExists) {
-                    // Определяем платформу для перенаправления
                     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
                     const platform = (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ? 'mines-ios' : 'mines-android-pc';
-                    window.location.href = `${platform}/ru.html`;
+                    window.location.href = `${platform}/${selectedLanguage}.html`;
                 } else {
-                    messageElem.textContent = 'Доступ запрещён';
+                    messageElem.textContent = texts.accessDenied;
                 }
             } catch (error) {
                 console.error('Ошибка при проверке ID:', error);
-                messageElem.textContent = 'Ошибка при проверке ID. Попробуйте снова.';
+                messageElem.textContent = texts.error;
             }
         }
+
+        function loadLanguage() {
+            const savedLanguage = localStorage.getItem('selectedLanguage');
+            if (savedLanguage) {
+                selectedLanguage = savedLanguage;
+                applyLanguage(savedLanguage);
+                document.getElementById('languageSelection').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+            } else {
+                document.getElementById('languageSelection').style.display = 'block';
+            }
+        }
+
+        window.onload = loadLanguage;
     </script>
 </body>
 </html>
