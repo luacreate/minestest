@@ -50,10 +50,6 @@
             color: white;
             font-size: 16px;
             cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #c0392b;
         }
         .add-user {
             margin-top: 20px;
@@ -67,26 +63,19 @@
             margin-bottom: 10px;
             border: none;
             border-radius: 5px;
-            outline: none;
         }
         .add-user select {
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
-            outline: none;
             background: #34495e;
             color: white;
         }
         .add-user button {
             background: #27ae60;
         }
-        .add-user button:hover {
-            background: #219150;
-        }
         #statusMessage {
             margin-top: 15px;
-            font-size: 16px;
-            font-weight: bold;
         }
         .success {
             color: #2ecc71;
@@ -98,9 +87,6 @@
             margin-top: 20px;
             background: #3498db;
             padding: 10px 20px;
-        }
-        .back-button:hover {
-            background: #2980b9;
         }
     </style>
 </head>
@@ -124,9 +110,11 @@
     </div>
 
     <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyAYX6P32DPnxXSav4Du073jAHDGuIlxOHgRwGtcGEC-ZMFa6d92p8SP_wBGPsMVv7p/exec';
+
         async function loadUsers() {
             try {
-                const response = await fetch('/admin/users');
+                const response = await fetch(scriptURL);
                 const users = await response.json();
                 const userListElem = document.getElementById('userList');
                 userListElem.innerHTML = '';
@@ -135,9 +123,9 @@
                     const userItem = document.createElement('div');
                     userItem.classList.add('user-item');
                     userItem.innerHTML = `
-                        <span>ID: ${user.userid}</span>
-                        <span>Админ: ${user.admin ? 'Да' : 'Нет'}</span>
-                        <button onclick="deleteUser('${user.userid}')">Удалить</button>
+                        <span>ID: ${user.userId}</span>
+                        <span>Админ: ${user.isAdmin ? 'Да' : 'Нет'}</span>
+                        <button onclick="deleteUser('${user.userId}')">Удалить</button>
                     `;
                     userListElem.appendChild(userItem);
                 });
@@ -158,13 +146,10 @@
             }
 
             try {
-                const response = await fetch('/add-user', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: newUserId, admin: userRole })
+                const response = await fetch(`${scriptURL}?action=add&userId=${newUserId}&isAdmin=${userRole}`, {
+                    method: 'GET'
                 });
+
                 if (response.ok) {
                     statusMessage.textContent = 'Пользователь добавлен';
                     statusMessage.className = 'success';
@@ -183,9 +168,10 @@
         async function deleteUser(userId) {
             const statusMessage = document.getElementById('statusMessage');
             try {
-                const response = await fetch(`/admin/users/${userId}`, {
-                    method: 'DELETE'
+                const response = await fetch(`${scriptURL}?action=delete&userId=${userId}`, {
+                    method: 'GET'
                 });
+
                 if (response.ok) {
                     statusMessage.textContent = 'Пользователь удалён';
                     statusMessage.className = 'success';
