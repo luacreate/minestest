@@ -26,10 +26,9 @@
         }
         h2 {
             margin-bottom: 20px;
-            font-size: 24px;
         }
         .user-list {
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
             margin-bottom: 20px;
             background: rgba(255, 255, 255, 0.1);
@@ -50,8 +49,8 @@
             border-radius: 5px;
             color: white;
             cursor: pointer;
-            margin-top: 10px;
             transition: background 0.3s;
+            margin-top: 10px;
         }
         button:hover {
             background: #219150;
@@ -63,20 +62,57 @@
         .back-button:hover {
             background: #2980b9;
         }
+        .add-user {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .add-user input, .add-user select {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .add-user button {
+            background: #27ae60;
+        }
+        .add-user button:hover {
+            background: #219150;
+        }
+        #statusMessage {
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        .success {
+            color: #2ecc71;
+        }
+        .error {
+            color: #e74c3c;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Админ Панель WebApp</h2>
-        <div class="user-list" id="userList">
-            <!-- Список пользователей будет загружаться здесь -->
+        <div class="user-list" id="userList"></div>
+        <div class="add-user">
+            <input type="text" id="newUserId" placeholder="ID нового пользователя">
+            <select id="userRole">
+                <option value="false">Пользователь</option>
+                <option value="true">Администратор</option>
+            </select>
+            <button onclick="addUser()">Добавить пользователя</button>
         </div>
+        <p id="statusMessage"></p>
         <button class="back-button" onclick="goBack()">Назад</button>
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyAYX6P32DPnxXSav4Du073jAHDGuIlxOHgRwGtcGEC-ZMFa6d92p8SP_wBGPsMVv7p/exec';
 
+        // Функция загрузки пользователей из Google Sheets
         async function loadUsers() {
             try {
                 const response = await fetch(`${scriptURL}?action=get`);
@@ -103,11 +139,71 @@
             }
         }
 
+        // Функция добавления пользователя
+        async function addUser() {
+            const newUserId = document.getElementById('newUserId').value;
+            const userRole = document.getElementById('userRole').value === 'true';
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (!newUserId) {
+                statusMessage.textContent = 'Введите ID нового пользователя';
+                statusMessage.className = 'error';
+                return;
+            }
+
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'add', userId: newUserId, isAdmin: userRole })
+                });
+
+                if (response.ok) {
+                    statusMessage.textContent = 'Пользователь добавлен';
+                    statusMessage.className = 'success';
+                    loadUsers();
+                } else {
+                    statusMessage.textContent = 'Ошибка при добавлении пользователя';
+                    statusMessage.className = 'error';
+                }
+            } catch (error) {
+                console.error('Ошибка при добавлении пользователя:', error);
+                statusMessage.textContent = 'Ошибка при добавлении пользователя';
+                statusMessage.className = 'error';
+            }
+        }
+
+        // Функция удаления пользователя
+        async function deleteUser(userId) {
+            const statusMessage = document.getElementById('statusMessage');
+            try {
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete', userId })
+                });
+
+                if (response.ok) {
+                    statusMessage.textContent = 'Пользователь удалён';
+                    statusMessage.className = 'success';
+                    loadUsers();
+                } else {
+                    statusMessage.textContent = 'Ошибка при удалении пользователя';
+                    statusMessage.className = 'error';
+                }
+            } catch (error) {
+                console.error('Ошибка при удалении пользователя:', error);
+                statusMessage.textContent = 'Ошибка при удалении пользователя';
+                statusMessage.className = 'error';
+            }
+        }
+
+        // Функция для кнопки "Назад"
         function goBack() {
             window.location.href = 'index.html';
         }
 
-        // Загрузка пользователей при загрузке страницы
+        // Загрузка списка пользователей при загрузке страницы
         document.addEventListener('DOMContentLoaded', loadUsers);
     </script>
 </body>
