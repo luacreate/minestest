@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animated SVG with Loading Bar</title>
     <style>
+        @font-face {
+            font-family: 'Intro';
+            src: url('intro.otf') format('opentype');
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -17,12 +22,14 @@
             background-size: cover;
             overflow: hidden;
         }
+
         .svg-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .loading-container {
             width: 50%;
             height: 8px;
@@ -30,17 +37,34 @@
             border-radius: 10px;
             overflow: hidden;
             position: relative;
+            margin-bottom: 20px;
         }
+
         .loading-bar {
             width: 0%;
             height: 100%;
             background-color: #ff8c00; /* Оранжевый цвет */
             border-radius: 10px;
-            animation: loading 8s linear forwards; /* Замедлено до 8 секунд */
+            animation: loading 8s linear forwards;
         }
+
         @keyframes loading {
             0% { width: 0%; }
             100% { width: 100%; }
+        }
+
+        .connection-text {
+            font-family: 'Intro', sans-serif;
+            color: #ff8c00; /* Оранжевый цвет */
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 2px;
+            animation: blinking 1s infinite;
+        }
+
+        @keyframes blinking {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
@@ -54,5 +78,8 @@
     <div class="loading-container">
         <div class="loading-bar"></div>
     </div>
+
+    <!-- Текст "ПОДКЛЮЧЕНИЕ..." ниже полоски загрузки -->
+    <div class="connection-text">ПОДКЛЮЧЕНИЕ...</div>
 </body>
 </html>
