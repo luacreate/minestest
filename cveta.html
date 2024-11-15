@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated SVG with Loading Bar</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('back.png') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+        .svg-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .loading-container {
+            width: 50%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #a020f0; /* Фиолетовый цвет */
+            border-radius: 10px;
+            animation: loading 3s linear forwards;
+        }
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG-анимация по центру -->
+    <div class="svg-container">
+        <img src="entro.svg" alt="Animated SVG" width="150" height="150">
+    </div>
+
+    <!-- Полоска загрузки ниже SVG -->
+    <div class="loading-container">
+        <div class="loading-bar"></div>
+    </div>
+</body>
+</html>
